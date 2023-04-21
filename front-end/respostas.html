@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>IBM</title>
+</head>
+
+<body style="background-color:#000;">
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+        <div class="w-100">
+            <button class="btn btn-light float-left" type="button" onclick="history.go(-1);">voltar</button>
+            <h3 class="text-center text-light">PNL analysis</h3>
+        </div>
+    </nav>
+    <nav class="navbar navbar-expand-lg navbar-light bg-secondary">
+        <div class="w-100">
+            <p class="text-center text-light m-0 font-weight-bold" id="clienteNome"></p>
+            <p class="text-center text-light small m-1" id="temaPergunta">Insira uma resposta para analise</p>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row justify-content-center my-5">
+            <div class="col-md-12">
+                <div class="row justify-content-center">
+                    <div class="col-md-7 ">
+                        <div class="form-row justify-content-center">
+                            <div class="form-group col-1 text-light text-center">
+                                <label for="perguntaId">Id</label>
+                                <input type="text" class="form-control" id="perguntaId" disabled>
+                            </div>
+                            <div class="form-group col-9 text-light text-center">
+                                <label for="RespostaCad">Registrar resposta para Analise</label>
+                                <textarea type="text" class="form-control" id="RespostaCad" rows="2" placeholder="Insira a Resposta..."></textarea>
+                            </div>
+                            <div class="form-group col-12 text-light text-center">
+                                <button type="button" class="btn btn-dark mb-3" onclick="registraResposta()">Analisar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="max-height: 500px; overflow-y: scroll;flex-wrap: nowrap;">
+                    <table class="table table-striped table-dark small">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Resposta</th>
+                                <th scope="col">Palavra chave</th>
+                                <th scope="col">Sentimento</th>
+                                <th scope="col">Ação</th>
+                                <th scope="col">Ir</th>
+                            </tr>
+                        </thead>
+                        <tbody id="setRespostas">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="dashboard" style="display: none;">
+        <div class="row justify-content-center ">
+            <div class="col-md-12 mt-3">
+                <div class="row">
+
+                    <div class="col-md-6 mt-4">
+                        <!-- HTML -->
+                        <div class="card text-white bg-info" style="border-radius: 20px;">
+                            <div class="card-header"><b>cloud charts - Palavras chave</b></div>
+                            <div class="card-body">
+                                <div id="chartdiv" class="bg-light" style="border-radius: 5px;"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-6 mt-4">
+                        <!-- HTML -->
+                        <div class="card text-white bg-info" style="border-radius: 20px;">
+                            <div class="card-header"><b>cloud charts - Respostas</b></div>
+                            <div class="card-body">
+                                <div id="chartdiv-respostas" class="bg-light" style="border-radius: 5px;"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-4 mt-4">
+                        <div class="card text-white bg-info" style="border-radius: 20px;">
+                            <div class="card-header"><b>Quantidade por Sentimento</b></div>
+                            <div class="card-body">
+                                <p class="card-text">Total respostas: <span id="qtdTotal"></span></p>
+                                <hr>
+                                <p class="card-text">Positivo: <span id="qtdPositivo"></span></p>
+                                <p class="card-text">Neutro: <span id="qtdNeutro"></span></p>
+                                <p class="card-text">Negativo: <span id="qtdNegativo"></span></p>
+
+
+                                <p id="grafic-porcent"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mt-4">
+                        <div class="card text-white bg-info" style="border-radius: 20px;">
+                            <div class="card-header"><b>Perguntas mais Negativas</b></div>
+                            <div class="card-body">
+                                <ul id="maisNegativa" class="list-group small">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mt-4">
+                        <div class="card text-white bg-info" style="border-radius: 20px;">
+                            <div class="card-header"><b>Perguntas mais Positivas</b></div>
+                            <div class="card-body">
+                                <ul id="maisPositivo" class="list-group small">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-core.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-pie.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-base.min.js"></script>
+
+    <!-- Styles -->
+    <style>
+        #chartdiv {
+            width: 100%;
+            height: 500px;
+        }
+        
+        #chartdiv-respostas {
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+
+    <!-- Resources -->
+    <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/plugins/wordCloud.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+
+
+
+    <script>
+        $(function() {
+
+            let perguntaId = window.location.search.replace('?pergunta=', '')
+            console.log(perguntaId)
+
+            $("#perguntaId").val(perguntaId)
+            allRespostas(perguntaId)
+
+
+
+
+        })
+
+
+        const allRespostas = (perguntaId) => {
+
+            const url = `http://localhost:3000/respostas/${perguntaId}`
+
+            fetch(url, {
+                    method: 'get',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json()
+                    .then(data => {
+                        console.log(data)
+                        result = data.response
+                        htmlRespostas(result)
+                        contSentimento(result)
+                        palavrasChave(result)
+                        textResposta(result)
+
+                        if (Object.keys(result).length != 0) {
+                            $("#dashboard").show()
+                        }
+                    }))
+
+
+        }
+
+        const textResposta = (param) => {
+
+            const textrespostas = param.map(i => {
+                    console.log(i.respostas)
+                    return i.respostas
+                })
+                //console.log(textrespostas.toString())
+            let analizeText = textrespostas.toString()
+
+
+            /* api nuvem de palavras */
+            am4core.ready(function() {
+
+                // Themes begin
+                am4core.useTheme(am4themes_animated);
+                // Themes end
+
+                var chart = am4core.create("chartdiv-respostas", am4plugins_wordCloud.WordCloud);
+                var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
+
+                series.accuracy = 4;
+                series.step = 15;
+                series.rotationThreshold = 0.7;
+                series.maxCount = 100;
+                series.minWordLength = 2;
+                series.labels.template.tooltipText = "{word}: {value}";
+                series.fontFamily = "Courier New";
+                series.maxFontSize = am4core.percent(30);
+
+                String.prototype.allReplace = function(obj) {
+                    var retStr = this;
+                    for (var x in obj) {
+                        retStr = retStr.replace(new RegExp(x, 'g'), obj[x]);
+                    }
+                    return retStr;
+                };
+
+                /* console.log(analizeText.allReplace({
+                    ' em ': ' ',
+                    ' de ': ' '
+                })); */
+
+
+                series.text = analizeText.allReplace({
+                    ' em ': ' ',
+                    ' de ': ' ',
+                    ' para ': ' ',
+                    ' um ': ' ',
+                    ' que ': ' ',
+                    ' da ': ' ',
+                    ' se ': ' ',
+                    ' do ': ' ',
+                    ' no ': ' ',
+                    ' na ': ' ',
+                    ' com ': ' ',
+                    ' uma ': ' ',
+                    ' como ': ' ',
+                    ' os ': ' ',
+                    ' por ': ' ',
+                    ' as ': ' ',
+                    ' dos ': ' ',
+                    ' das ': ' ',
+                    ' não ': ' ',
+                    ' mas ': ' ',
+                    ' mais ': ' ',
+                    ' ou ': ' ',
+                    ' ao ': ' ',
+                    ' pela ': ' ',
+                    ' pelo ': ' ',
+                    ' sua ': ' ',
+                    ' nos ': ' ',
+                    ' faz ': ' ',
+                    ' me ': ' ',
+                    ' ti ': ' ',
+                    ' se ': ' ',
+                    ' aos ': ' ',
+                    ' tu ': ' ',
+                    ' ti ': ' ',
+                    ' quem ': ' ',
+                    ' nem ': ' ',
+                    ' cada ': ' '
+                })
+
+
+
+                series.colors = new am4core.ColorSet();
+                series.colors.passOptions = {}; // makes it loop
+
+                //series.labelsContainer.rotation = 45;
+                series.angles = [0, -90];
+                series.fontWeight = "700"
+
+                setInterval(function() {
+                    series.dataItems.getIndex(Math.round(Math.random() * (series.dataItems.length - 1))).setValue("value", Math.round(Math.random() * 10));
+                }, 10000)
+
+
+            }); // end am4core.ready()
+        }
+
+
+        const palavrasChave = (param) => {
+
+            const textChave = param.map(i => {
+                    console.log(i.palavraChave)
+                    return i.palavraChave
+                })
+                //console.log(textChave.toString())
+            let analizeText = textChave.toString()
+
+
+            /* api nuvem de palavras */
+            am4core.ready(function() {
+
+                // Themes begin
+                am4core.useTheme(am4themes_animated);
+                // Themes end
+
+                var chart = am4core.create("chartdiv", am4plugins_wordCloud.WordCloud);
+                var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
+
+                series.accuracy = 4;
+                series.step = 15;
+                series.rotationThreshold = 0.7;
+                series.maxCount = 200;
+                series.minWordLength = 2;
+                series.labels.template.tooltipText = "{word}: {value}";
+                series.fontFamily = "Courier New";
+                series.maxFontSize = am4core.percent(30);
+
+                series.text = analizeText.replace(/and/g, '').replace(/business/g, '');
+
+
+                series.colors = new am4core.ColorSet();
+                series.colors.passOptions = {}; // makes it loop
+
+                //series.labelsContainer.rotation = 45;
+                series.angles = [0, -90];
+                series.fontWeight = "700"
+
+                setInterval(function() {
+                    series.dataItems.getIndex(Math.round(Math.random() * (series.dataItems.length - 1))).setValue("value", Math.round(Math.random() * 10));
+                }, 10000)
+
+            }); // end am4core.ready()
+        }
+
+        const contSentimento = (param) => {
+
+
+            function contaNegativo(num) {
+                //console.log(num.filter(nr => nr.sentimento < 0))
+                let result = num.filter(nr => nr.sentimento < 0)
+                let data = {
+                    "cont": result.length,
+                    "porcent": ((result.length / num.length) * 100).toFixed(),
+                    "arrayOrder": result
+                }
+                return data
+            }
+
+
+            function contaPositivo(num) {
+
+                let result = num.filter(nr => nr.sentimento > 0)
+
+                let data = {
+                    "cont": result.length,
+                    "porcent": ((result.length / num.length) * 100).toFixed(),
+                    "arrayOrder": result
+                }
+                return data
+            }
+
+
+            function contaNeutro(num) {
+
+
+
+                let result = num.filter(nr => nr.sentimento == 0)
+                let data = {
+                    "cont": result.length,
+                    "porcent": ((result.length / num.length) * 100).toFixed(),
+                    "arrayOrder": result,
+                }
+                return data
+            }
+
+            //console.log(contaPositivo(param))
+
+            let negativo = contaNegativo(param);
+
+            let positivo = contaPositivo(param);
+            let neutro = contaNeutro(param);
+            $("#qtdPositivo").append(`${positivo.cont}`)
+            $("#qtdNegativo").append(`${negativo.cont}`)
+            $("#qtdNeutro").append(`${neutro.cont}`)
+            $("#qtdTotal").append(`${neutro.cont + negativo.cont + positivo.cont}`)
+
+            graficPorcent(positivo.porcent, negativo.porcent, neutro.porcent)
+
+
+            let maisNegativo = negativo.arrayOrder
+            let maisPositivo = positivo.arrayOrder
+
+            maisNegativo.sort(function(a, b) {
+                if (a.sentimento > b.sentimento) {
+                    return 1;
+                }
+                if (a.sentimento < b.sentimento) {
+                    return -1;
+                }
+                // a must be equal to b
+                return 0;
+            });
+
+            maisPositivo.sort(function(a, b) {
+                if (a.sentimento > b.sentimento) {
+                    return 1;
+                }
+                if (a.sentimento < b.sentimento) {
+                    return -1;
+                }
+                // a must be equal to b
+                return 0;
+            });
+
+            let tresMaisNegativas = maisNegativo.reverse().slice(0, 3)
+            let tresMaisPositivas = maisPositivo.reverse().slice(0, 3)
+
+            const N = tresMaisNegativas.map(i => {
+                //console.log(i.sentimento)
+
+                $("#maisNegativa").append(`<li class="list-group-item list-group-item-danger">${i.respostas} (${(i.sentimento)})</li>`)
+
+            })
+
+            const P = tresMaisPositivas.map(i => {
+                //console.log(i.sentimento)
+
+                $("#maisPositivo").append(`<li class="list-group-item list-group-item-primary">${i.respostas} (${i.sentimento})</li>`)
+
+            })
+
+        }
+        const graficPorcent = (positivo, negativo, neutro) => {
+            // create data
+            var data = [{
+                x: "Positivo",
+                value: positivo
+            }, {
+                x: "Negativo",
+                value: negativo
+            }, {
+                x: "Neutro",
+                value: neutro
+            }];
+
+            // create a pie chart and set the data
+            chart = anychart.pie(data);
+            // set the position of labels
+            chart.labels().position("outside");
+            // configure connectors
+            chart.connectorStroke({
+                color: "#456",
+                thickness: 2,
+                dash: "8 8"
+            });
+            /* set the inner radius
+            (to turn the pie chart into a doughnut chart)*/
+            chart.innerRadius("30%");
+
+            // set the container id
+            chart.container("grafic-porcent");
+
+            // initiate drawing the chart
+            chart.draw();
+        }
+
+        const htmlRespostas = (respostas) => {
+
+            $("#setRespostas").html('')
+
+            let i = 0
+            const usersRespostas = respostas.map(item => {
+                //console.log(item.nome)
+                $("#temaPergunta").html('')
+                $("#temaPergunta").append(`${item.pergunta}`)
+                $("#clienteNome").html('')
+                $("#clienteNome").append(`${item.clienteNome}`)
+
+
+
+                let iconEmocao = ''
+
+                if (item.sentimento > 0) {
+                    iconEmocao = (`
+                    <img src="img/happiness.png" alt="" style="width:22px;background-color:#00FFFF;border-radius:100px;">
+                    `)
+                }
+                if (item.sentimento < 0) {
+                    iconEmocao = (`
+                    <img src="img/sad.png" alt="" style="width:22px;background-color:#FF0000;border-radius:100px;">
+                    `)
+
+                }
+                if (item.sentimento == 0) {
+                    iconEmocao = (`
+                    <img src="img/neutral.png" alt="" style="width:22px;background-color:#fff;border-radius:100px;">
+                    `)
+
+
+                }
+
+
+                $("#setRespostas").append(`
+                    <tr>
+                        <th scope="row">${i++}</th>
+                        <td>${item.respostas}</td>
+                        <td>${item.palavraChave}</td>
+                        <td class="text-center">
+                            <p >${iconEmocao}</p>
+                            <p>${((item.sentimento)*100).toFixed()}%</p>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="deletarResposta(${item.id})"><img src="img/lixeira.png" alt="" style="width:22px;" class="pl-1"></button></td>
+                        <td><a role="button" class="btn btn-light btn-sm" href="analise-texto.html?resposta=${item.respostas}">Analisar > </a></td>
+                    </tr>
+                `)
+            })
+        }
+
+        const registraResposta = (clienteId) => {
+
+            if ($("#RespostaCad").val() || $("#RespostaCad").val()) {
+                let id_pergunta = $("#perguntaId").val()
+
+                const url = `http://localhost:3000/respostaAnalise`
+
+                let metodo = ''
+
+                const RespostaCad = $("#RespostaCad").val()
+                if (RespostaCad) {
+                    metodo = {
+                        perguntaId: id_pergunta,
+                        text: RespostaCad
+                    }
+                }
+
+
+
+                fetch(url, {
+                        method: 'post',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(metodo)
+                    })
+                    .then(response => response.json()
+                        .then(data => {
+                            console.log(data)
+                            alert(data.mensagem)
+                                // Recarrega a página atual sem usar o cache
+                            document.location.reload(true);
+                        }))
+            } else {
+                alert('Favor preencher os campos')
+            }
+
+        }
+
+        const deletarResposta = (id) => {
+
+
+            const url = `http://localhost:3000/respostas/${id}`
+
+            fetch(url, {
+                    method: 'delete',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json()
+                    .then(data => {
+                        console.log(data)
+                        alert(data.mensagem)
+
+                        // Recarrega a página atual sem usar o cache
+                        document.location.reload(true);
+                    }))
+
+
+        }
+    </script>
+
+</body>
+
+</html>

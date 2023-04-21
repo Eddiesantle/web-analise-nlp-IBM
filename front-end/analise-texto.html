@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>IBM</title>
+</head>
+
+<body style="background-color:#000;">
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+        <div class="w-100">
+            <button class="btn btn-light float-left" type="button" onclick="history.go(-1);">voltar</button>
+            <h3 class="text-center text-light">PNL analysis</h3>
+        </div>
+    </nav>
+    <div class="container text-light">
+        <div class="row justify-content-center">
+            <div class="col-md-8 mt-4">
+
+
+                <form id="formsentimento">
+                    <div class="form-row justify-content-center">
+                        <div class="form-group col-10">
+                            <label for="texto">Digite sua resposta:</label>
+                            <textarea class="form-control" id="texto" rows="4" name="texto"></textarea>
+                        </div>
+
+                        <!-- <div class="form-group col-6">
+                            <label for="texto">Digite aqui url site:</label>
+                            <textarea class="form-control" id="textourl" rows="3" name="texto"></textarea>
+                        </div> -->
+                        <div class="w-100 text-center">
+                            <button type="button" class="btn btn-dark px-4" onclick="fetchAnaliseSentimento()">Analisar</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+            <!-- <div class="w-100 text-center">
+                <button class="btn btn-dark" type="button" onclick="fetchRequisicao()">Requisição person</button>
+            </div>
+            <div id="box-sentimento" class="w-100 border"></div>
+            <div id="person" class="w-100 border"></div> -->
+        </div>
+
+        <div class="row my-5 bg-dark rounded" id="dashboard" style="display: none;">
+
+            <div class="col-12 col-md-3 mt-4">
+                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link active" id="v-pills-sentiment-tab" data-toggle="pill" href="#v-pills-sentiment" role="tab" aria-controls="v-pills-sentiment" aria-selected="true">sentiment/sentimento</a>
+                    <a class="nav-link" id="v-pills-emotion-tab" data-toggle="pill" href="#v-pills-emotion" role="tab" aria-controls="v-pills-emotion" aria-selected="true">emotion/Emoção</a>
+                    <a class="nav-link" id="v-pills-keyword-tab" data-toggle="pill" href="#v-pills-keyword" role="tab" aria-controls="v-pills-keyword" aria-selected="true">keyword/palavra-chave</a>
+                    <a class="nav-link" id="v-pills-categories-tab" data-toggle="pill" href="#v-pills-categories" role="tab" aria-controls="v-pills-categories" aria-selected="false">categories/categorias</a>
+                    <a class="nav-link" id="v-pills-concepts-tab" data-toggle="pill" href="#v-pills-concepts" role="tab" aria-controls="v-pills-concepts" aria-selected="false">concepts/conceitos</a>
+                    <a class="nav-link" id="v-pills-relations-tab" data-toggle="pill" href="#v-pills-relations" role="tab" aria-controls="v-pills-relations" aria-selected="false">relations/relações</a>
+                    <a class="nav-link" id="v-pills-entities-tab" data-toggle="pill" href="#v-pills-entities" role="tab" aria-controls="v-pills-entities" aria-selected="false">entities/entidades</a>
+                </div>
+            </div>
+            <div class="col-12 col-md-9" style="max-height: 400px; overflow-y: scroll;flex-wrap: nowrap;">
+                <div class="tab-content" id="v-pills-tabContent">
+                    <div class="tab-pane fade show active" id="v-pills-sentiment" role="tabpanel" aria-labelledby="v-pills-sentiment-tab">
+                        <ul id="setsentiment" class="list-group"></ul>
+                    </div>
+                    <div class="tab-pane fade" id="v-pills-emotion" role="tabpanel" aria-labelledby="v-pills-emotion-tab">
+                        <ul id="setemotion" class="list-group"></ul>
+                    </div>
+                    <div class="tab-pane fade" id="v-pills-keyword" role="tabpanel" aria-labelledby="v-pills-keyword-tab">
+                        <ul id="setkeyword" class="list-group"></ul>
+                    </div>
+                    <div class="tab-pane fade" id="v-pills-categories" role="tabpanel" aria-labelledby="v-pills-categories-tab">
+                        <ul id="setcategories" class="list-group"></ul>
+                    </div>
+                    <div class="tab-pane fade" id="v-pills-concepts" role="tabpanel" aria-labelledby="v-pills-concepts-tab">
+                        <ul id="setconcepts" class="list-group"></ul>
+                    </div>
+                    <div class="tab-pane fade" id="v-pills-relations" role="tabpanel" aria-labelledby="v-pills-relations-tab">
+                        <ul id="setrelations" class="list-group"></ul>
+                    </div>
+                    <div class="tab-pane fade" id="v-pills-entities" role="tabpanel" aria-labelledby="v-pills-entities-tab">
+                        <ul id="setentities" class="list-group"></ul>
+                    </div>
+                </div>
+            </div>
+            <div id="setlanguage" class="w-100"></div>
+            <div id="setwarnings" class="col-12"></div>
+
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src=script.js></script>
+
+</body>
+
+</html>

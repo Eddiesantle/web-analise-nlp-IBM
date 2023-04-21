@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>IBM</title>
+</head>
+
+<body style="background-color:#000;">
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+        <div class="w-100">
+            <button class="btn btn-light float-left" type="button" onclick="history.go(-1);">voltar</button>
+            <h3 class="text-center text-light">PNL analysis</h3>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row justify-content-center my-5">
+
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-row justify-content-center">
+                            <div class="form-group col-6 text-light text-center">
+                                <label for="ClienteCad">Cadastrar Cliente</label>
+                                <input type="text" class="form-control" id="ClienteCad" name="nome" placeholder="Insira o cliente...">
+                                <button type="button" class="btn btn-dark my-3" onclick="registraCliente()">Salvar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped table-dark">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Cliente</th>
+                            <th scope="col">Ação</th>
+                            <th scope="col">Ir</th>
+                        </tr>
+                    </thead>
+                    <tbody id="setClientes">
+                    </tbody>
+                </table>
+            </div>
+            <div id="col-perguntas" class="col-md-7" style="display: none;">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-row justify-content-center">
+                            <div class="form-group col-1 text-light text-center">
+                                <label for="clienteId">Id</label>
+                                <input type="text" class="form-control" id="clienteId" disabled>
+                            </div>
+                            <div class="form-group col-9 text-light text-center">
+                                <label for="ClienteCad">Cadastrar Perguntas</label>
+                                <textarea type="text" class="form-control" id="PerguntaCad" rows="1" placeholder="Insira a pergunta..."></textarea>
+                            </div>
+                            <div class="form-group col-12 text-light text-center">
+                                <button type="button" class="btn btn-dark mb-3" onclick="registraPergunta()">Salvar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped table-dark">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Tema</th>
+                            <th scope="col">Ação</th>
+                            <th scope="col">Ir</th>
+                        </tr>
+                    </thead>
+                    <tbody id="setPerguntas">
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script>
+        $(function() {
+            allClientes()
+        })
+
+
+        const registraCliente = () => {
+
+            if ($("#ClienteCad").val() || $("#ClienteCad").val()) {
+
+                const url = 'http://localhost:3000/clientes'
+
+                let metodo = ''
+
+                const ClienteCad = $("#ClienteCad").val()
+                if (ClienteCad) {
+                    metodo = {
+                        nome: ClienteCad
+                    }
+                }
+
+
+
+                fetch(url, {
+                        method: 'post',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(metodo)
+                    })
+                    .then(response => response.json()
+                        .then(data => {
+                            console.log(data)
+                            alert(data.mensagem)
+                                // Recarrega a página atual sem usar o cache
+                            document.location.reload(true);
+                        }))
+            } else {
+                alert('Favor preencher os campos')
+            }
+
+        }
+
+        const deletarCliente = (id) => {
+
+
+            const url = `http://localhost:3000/clientes/${id}`
+
+            fetch(url, {
+                    method: 'delete',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json()
+                    .then(data => {
+                        console.log(data)
+                        alert(data.mensagem)
+
+                        // Recarrega a página atual sem usar o cache
+                        document.location.reload(true);
+                    }))
+
+
+        }
+
+
+
+        const allClientes = () => {
+
+            const url = 'http://localhost:3000/clientes/'
+
+            fetch(url, {
+                    method: 'get',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json()
+                    .then(data => {
+                        console.log(data)
+                        result = data.response
+                        htmlClientes(result)
+
+                    }))
+
+
+        }
+
+        const htmlClientes = (cliente) => {
+
+            $("#setClientes").html('')
+            let i = 0
+            const usersclientes = cliente.map(item => {
+                console.log(item.nome)
+
+
+                $("#setClientes").append(`
+                        <tr>
+                            <th scope="row">${i++}</th>
+                            <td>${item.nome}</td>
+                            <td><button type="button" class="btn btn-info btn-sm" ><img src="img/lapis.png" alt="" style="width:20px;"></button><button type="button" class="btn btn-danger btn-sm" onclick="deletarCliente(${item.id})"><img src="img/lixeira.png" alt="" style="width:22px;" class="pl-1"></button></td>
+                            <td><button type="button" class="btn btn-light btn-sm" onclick="allPerguntas(${item.id})">Perguntas > </button></td>
+                        </tr>
+                    `)
+            })
+        }
+        const registraPergunta = (clienteId) => {
+
+            if ($("#PerguntaCad").val() || $("#PerguntaCad").val()) {
+                let id_cliente = $("#clienteId").val()
+
+                const url = `http://localhost:3000/perguntas/`
+
+                let metodo = ''
+
+                const PerguntaCad = $("#PerguntaCad").val()
+                if (PerguntaCad) {
+                    metodo = {
+                        clienteId: id_cliente,
+                        pergunta: PerguntaCad
+                    }
+                }
+
+
+
+                fetch(url, {
+                        method: 'post',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(metodo)
+                    })
+                    .then(response => response.json()
+                        .then(data => {
+                            console.log(data)
+                            alert(data.mensagem)
+                                // Recarrega a página atual sem usar o cache
+                            document.location.reload(true);
+                        }))
+            } else {
+                alert('Favor preencher os campos')
+            }
+
+        }
+
+
+        const allPerguntas = (id) => {
+
+            const url = `http://localhost:3000/perguntas/${id}`
+
+            $("#clienteId").val(id)
+
+            fetch(url, {
+                    method: 'get',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json()
+                    .then(data => {
+                        console.log(data)
+                        result = data.response
+                        htmlPerguntas(result)
+                        $("#col-perguntas").show()
+
+                    }))
+        }
+
+        const htmlPerguntas = (perguntas) => {
+
+            $("#setPerguntas").html('')
+            let i = 0
+            if (Object.keys(perguntas).length > 0) {
+                const usersPerguntas = perguntas.map(item => {
+                    console.log(item.pergunta)
+
+
+                    $("#setPerguntas").append(`
+                    <tr>
+                        <th scope="row">${i++}</th>
+                        <td>${item.pergunta}</td>
+                        <td><button type="button" class="btn btn-info btn-sm" ><img src="img/lapis.png" alt="" style="width:20px;"></button><button type="button" class="btn btn-danger btn-sm" onclick="deletarPergunta(${item.id})"><img src="img/lixeira.png" alt="" style="width:22px;" class="pl-1"></button></td>
+                        <td><a role="button" class="btn btn-light btn-sm" href="respostas.html?pergunta=${item.id}">Respostas > </a></td>
+                    </tr>
+                `)
+                })
+            } else {
+                $("#setPerguntas").append(`
+                    <tr>
+                        <th scope="row">${i++}</th>
+                        <td colspan="3">Não possui perguntas</td>
+                    </tr>
+                `)
+            }
+
+        }
+
+
+        const deletarPergunta = (id) => {
+
+
+            const url = `http://localhost:3000/perguntas/${id}`
+
+            fetch(url, {
+                    method: 'delete',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json()
+                    .then(data => {
+                        console.log(data)
+                        alert(data.mensagem)
+
+                        // Recarrega a página atual sem usar o cache
+                        document.location.reload(true);
+                    }))
+
+
+        }
+    </script>
+
+</body>
+
+</html>
