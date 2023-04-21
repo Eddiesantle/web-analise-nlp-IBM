@@ -1,0 +1,10 @@
+{
+    "env": {
+        "MYSQL_CONNLIMIT": 10,
+        "MYSQL_PASSWORD": "",
+        "MYSQL_USER": "root",
+        "MYSQL_DATABASE": "pnl_analysis",
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": 3306
+    }
+}
